@@ -1,5 +1,16 @@
 #!/bin/bash
 
+if [[ ! -f db_config.ini ]] ; then
+    echo "Missing db_config.ini, is should contain the following"
+    echo "[database]"
+    echo "host=localhost"
+    echo "port=5432"
+    echo "dbname=accelerate"
+    echo "user=accelerator"
+    echo "password=somepassword"
+    exit 1
+fi
+
 if [[ "$(hostname | cut -f1 -d-)" == "codespaces" ]] ; then
     apt update
     apt install postgresql
