@@ -11,6 +11,7 @@ if [[ ! -f db_config.ini ]] ; then
     exit 1
 fi
 
+# Used for simple tests on codespaces
 if [[ "$(hostname | cut -f1 -d-)" == "codespaces" ]] ; then
     apt update
     apt install postgresql
@@ -18,9 +19,17 @@ if [[ "$(hostname | cut -f1 -d-)" == "codespaces" ]] ; then
     useradd accelerator
     su -c "/workspaces/pbspro-paidservice/create_db.sh" postgres
     pip install psycopg2
-else 
-    if [[ -f /etc/redhat-release ]] ; then
-        if [[ ! -z ${PGPASSWORD} ]] ; then
+    exit 0
+fi
+
+# Install in PBSServer
+source /etc/pbs.conf
+if [[ -z ${PBS_START_SERVER} ]]; then
+    echo "This should be installed on a PBSPro server as it makes changes to the postgres db"
+else
+    source /etc/os-release
+    if [[ "${ID}" == "rhel" ]] ; then
+        if [[ -z ${PGPASSWORD} ]] ; then
             echo "A password for pbsdata must be set with pbs_ds_password" 
             echo "This then needs to be set to the PGPASSWORD env var"
             exit 1
@@ -30,7 +39,3 @@ else
         PGPORT=15007 PGDATABASE=pbs_datastore PGUSER=pbsdata PGHOST=/tmp ./create_db.sh
     fi
 fi
-
-
-
-
