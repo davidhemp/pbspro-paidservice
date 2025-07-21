@@ -34,7 +34,7 @@ else
             echo "This then needs to be set to the PGPASSWORD env var"
             exit 1
         fi
-        dnf -y install postgresql
+        dnf -y install postgresql python3-psycopg2
         useradd accelerator
         PGPORT=15007 PGDATABASE=pbs_datastore PGUSER=pbsdata PGHOST=/tmp ./create_db.sh
     fi
