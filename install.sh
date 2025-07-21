@@ -18,9 +18,19 @@ if [[ "$(hostname | cut -f1 -d-)" == "codespaces" ]] ; then
     useradd accelerator
     su -c "/workspaces/pbspro-paidservice/create_db.sh" postgres
     pip install psycopg2
+else 
+    if [[ -f /etc/redhat-release ]] ; then
+        if [[ ! -z ${PGPASSWORD} ]] ; then
+            echo "A password for pbsdata must be set with pbs_ds_password" 
+            echo "This then needs to be set to the PGPASSWORD env var"
+            exit 1
+        fi
+        dnf -y install postgresql
+        useradd accelerator
+        PGPORT=15007 PGDATABASE=pbs_datastore PGUSER=pbsdata PGHOST=/tmp ./create_db.sh
+    fi
 fi
 
 
 
-# psql -h /tmp -U pbsdata -p 15007 pbs_datastore -c "CREATE DATABASE accelerate"
 
